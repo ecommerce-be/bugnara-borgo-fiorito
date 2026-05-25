@@ -6,7 +6,6 @@ import { MapFilters } from '../components/map/MapFilters';
 import { SpotDetailPanel } from '../components/map/SpotDetailPanel';
 import { useMapMarkers } from '../hooks/useApi';
 import type { SpotType } from '../types/api';
-import { SmallBloom } from '../components/decorative/Botanical';
 
 /**
  * The interactive map page — heart of the site.

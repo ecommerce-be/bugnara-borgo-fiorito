@@ -1,0 +1,108 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply font-serif antialiased;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-paper text-ink;
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+    background-image:
+      radial-gradient(at 10% 0%, rgba(176, 138, 74, 0.06) 0px, transparent 50%),
+      radial-gradient(at 90% 100%, rgba(74, 103, 65, 0.05) 0px, transparent 50%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.17 0 0 0 0 0.15 0 0 0 0 0.13 0 0 0 0.04 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display text-ink;
+    font-optical-sizing: auto;
+  }
+
+  ::selection {
+    background-color: rgba(200, 127, 111, 0.25);
+    color: #2b2620;
+  }
+}
+
+@layer components {
+  .eyebrow {
+    @apply font-sans text-eyebrow uppercase text-bloom-deep font-semibold;
+  }
+
+  .drop-cap::first-letter {
+    @apply font-display text-bloom-deep float-left;
+    font-size: 4.5rem;
+    line-height: 0.85;
+    margin: 0.4rem 0.6rem 0 0;
+    font-weight: 600;
+  }
+
+  .first\:drop-cap:first-child::first-letter {
+    @apply font-display text-bloom-deep float-left;
+    font-size: 4.5rem;
+    line-height: 0.85;
+    margin: 0.4rem 0.6rem 0 0;
+    font-weight: 600;
+  }
+
+  .pull-quote {
+    @apply font-display text-3xl md:text-4xl italic leading-snug text-ink-soft;
+  }
+
+  .link-editorial {
+    @apply text-ink underline decoration-bloom-deep/50 decoration-1 underline-offset-4
+           hover:decoration-bloom-deep hover:text-bloom-deep transition-colors duration-300;
+  }
+}
+
+/* ============= Leaflet customizations ============= */
+
+/* Subtle paper background while tiles load */
+.leaflet-container {
+  background: #f6efe2;
+  font-family: inherit;
+}
+
+/* Our custom marker (a small flower SVG) — pop in with a soft scale */
+.spot-marker {
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  filter: drop-shadow(0 2px 4px rgba(43, 38, 32, 0.25));
+}
+.spot-marker:hover {
+  transform: scale(1.18) rotate(-6deg);
+}
+
+/* Leaflet attribution: smaller and toned-down */
+.leaflet-control-attribution {
+  background: rgba(246, 239, 226, 0.85) !important;
+  font-family: ui-monospace, monospace;
+  font-size: 9px !important;
+  color: #4a4138 !important;
+  padding: 2px 6px !important;
+}
+.leaflet-control-attribution a {
+  color: #a55a4a !important;
+}
+
+/* Zoom buttons: editorial styling */
+.leaflet-control-zoom a {
+  background: #f6efe2 !important;
+  border: 1px solid rgba(43, 38, 32, 0.2) !important;
+  color: #2b2620 !important;
+  font-family: ui-sans-serif, sans-serif;
+  font-weight: 400 !important;
+  border-radius: 0 !important;
+}
+.leaflet-control-zoom a:hover {
+  background: #2b2620 !important;
+  color: #f6efe2 !important;
+}

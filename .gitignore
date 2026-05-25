@@ -1,0 +1,80 @@
+# ============= Secrets & environment =============
+# NEVER commit these — they contain API keys, passwords, tokens
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+.env.staging
+*.pem
+*.key
+secrets/
+**/application-prod.yml
+**/application-prod.properties
+**/application-local.yml
+**/application-secret.*
+
+# ============= Java / Maven =============
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.iml
+.mvn/wrapper/maven-wrapper.jar
+
+# ============= Spring Boot =============
+HELP.md
+!**/src/main/**/HELP.md
+!**/src/test/**/HELP.md
+
+# ============= Node / Frontend =============
+node_modules/
+dist/
+dist-ssr/
+*.local
+.vite/
+coverage/
+
+# ============= IDEs =============
+.idea/
+*.iws
+*.ipr
+.vscode/
+!.vscode/extensions.json
+*.swp
+.project
+.classpath
+.settings/
+
+# ============= OS =============
+.DS_Store
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# ============= Logs =============
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ============= Build artifacts =============
+build/
+out/
+.gradle/
+
+# ============= Database files =============
+*.db
+*.sqlite
+*.sqlite3
+*.h2.db
+*.trace.db
+*.lock.db
+
+# ============= Misc =============
+.cache/
+.tmp/
+tmp/

@@ -1,0 +1,56 @@
+# =============================================================
+# .gitattributes
+# =============================================================
+# Normalize line endings so the repo behaves the same on Windows,
+# macOS, and Linux. Without this, Windows clients keep getting
+# the "LF will be replaced by CRLF" warnings on every add.
+#
+# Rule: store everything as LF in the repo. On checkout, Git
+# converts to the OS default automatically.
+# =============================================================
+
+# Default: detect text vs binary and use LF in repo
+* text=auto eol=lf
+
+# Source files — always LF
+*.java       text eol=lf
+*.kt         text eol=lf
+*.ts         text eol=lf
+*.tsx        text eol=lf
+*.js         text eol=lf
+*.jsx        text eol=lf
+*.json       text eol=lf
+*.yml        text eol=lf
+*.yaml       text eol=lf
+*.xml        text eol=lf
+*.html       text eol=lf
+*.css        text eol=lf
+*.scss       text eol=lf
+*.md         text eol=lf
+*.txt        text eol=lf
+*.sql        text eol=lf
+*.properties text eol=lf
+*.sh         text eol=lf
+.gitignore   text eol=lf
+.gitattributes text eol=lf
+.env.example text eol=lf
+
+# Windows-only files — keep CRLF
+*.bat        text eol=crlf
+*.cmd        text eol=crlf
+*.ps1        text eol=crlf
+
+# Binary files — never touch line endings
+*.png        binary
+*.jpg        binary
+*.jpeg       binary
+*.gif        binary
+*.svg        binary
+*.ico        binary
+*.pdf        binary
+*.zip        binary
+*.jar        binary
+*.woff       binary
+*.woff2      binary
+*.ttf        binary
+*.otf        binary

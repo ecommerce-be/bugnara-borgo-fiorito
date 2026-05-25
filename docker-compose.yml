@@ -1,0 +1,34 @@
+# =============================================================
+# docker-compose for LOCAL DEVELOPMENT
+# =============================================================
+# Strategy:
+#   - We run only PostgreSQL in Docker, so you always have a clean,
+#     consistent DB available without installing Postgres on the host.
+#   - Backend (Spring Boot) and frontend (Vite) run natively on your
+#     machine, which gives the fastest possible reload during dev.
+#
+# In Phase 6 we'll add a separate docker-compose.prod.yml (or a
+# Dockerfile per service) for the deploy on Railway / Render.
+# =============================================================
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: borghetto-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: borghetto
+      POSTGRES_USER: borghetto
+      POSTGRES_PASSWORD: borghetto
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U borghetto -d borghetto"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:

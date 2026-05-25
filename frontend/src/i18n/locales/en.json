@@ -1,0 +1,46 @@
+{
+  "meta": {
+    "site_name": "Bugnara in Bloom",
+    "tagline": "The participatory map of a village in bloom."
+  },
+  "nav": {
+    "home": "Home",
+    "map": "The Map",
+    "stories": "Stories",
+    "participate": "Take part",
+    "about": "About us"
+  },
+  "footer": {
+    "credits": "A project by the community of Bugnara, in the Peligna Valley.",
+    "rights": "All rights reserved.",
+    "language": "Language"
+  },
+  "home": {
+    "eyebrow": "Bugnara, Abruzzo",
+    "title_line_1": "A village",
+    "title_line_2": "in bloom",
+    "subtitle": "House by house, alley by alley, an entire community has come together to bring colour back to its village. This is the map of that collective gesture.",
+    "cta_map": "Explore the map",
+    "cta_stories": "Read the stories",
+    "intro_eyebrow": "The initiative",
+    "intro_title": "From an idea of two young people, it became everyone's.",
+    "intro_body_1": "It started without fanfare: one winter morning, the idea of asking the people of Bugnara to embellish their homes, their corner of the alley, their patch of the square. With a flower, with a pot, with a thought.",
+    "intro_body_2": "A few months later, the entire village had answered. Long-standing families, new residents, the elderly tending the square, the kids looking after a public garden. Each dot on this map is a story of care.",
+    "stat_spots_label": "Flowered spots",
+    "stat_participants_label": "Participants",
+    "stat_year_label": "Since spring",
+    "section_map_eyebrow": "Explore",
+    "section_map_title": "The map of the blooming village",
+    "section_map_body": "Each dot is a house, a balcony, a small public space tended by a family or a group of volunteers. Click to discover photos, stories, and the names of those who contributed.",
+    "section_stories_eyebrow": "The tales",
+    "section_stories_title": "Voices from Bugnara",
+    "section_stories_body": "The stories of those who got their hands in the soil. How the idea was born, why it grew, where it is going."
+  },
+  "common": {
+    "loading": "Loading…",
+    "error_generic": "Something went wrong.",
+    "read_more": "Read more",
+    "back_to_map": "Back to the map",
+    "all_stories": "All stories"
+  }
+}

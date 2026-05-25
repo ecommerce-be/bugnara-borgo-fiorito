@@ -1,0 +1,46 @@
+{
+  "meta": {
+    "site_name": "Bugnara Borgo Fiorito",
+    "tagline": "La mappa partecipativa del borgo che sboccia."
+  },
+  "nav": {
+    "home": "Home",
+    "map": "La mappa",
+    "stories": "Le storie",
+    "participate": "Partecipa",
+    "about": "Chi siamo"
+  },
+  "footer": {
+    "credits": "Un progetto della comunità di Bugnara, in Valle Peligna.",
+    "rights": "Tutti i diritti riservati.",
+    "language": "Lingua"
+  },
+  "home": {
+    "eyebrow": "Bugnara, Abruzzo",
+    "title_line_1": "Un borgo",
+    "title_line_2": "che sboccia",
+    "subtitle": "Casa per casa, vicolo per vicolo, una comunità intera si è messa al lavoro per restituire colore al proprio paese. Questa è la mappa di quel gesto collettivo.",
+    "cta_map": "Scopri la mappa",
+    "cta_stories": "Leggi le storie",
+    "intro_eyebrow": "L'iniziativa",
+    "intro_title": "Da un'idea di due ragazzi, è diventata di tutti.",
+    "intro_body_1": "È nato così, senza grandi annunci: una mattina d'inverno, l'idea di chiedere a chi abita Bugnara di abbellire la propria casa, il proprio angolo di vicolo, il proprio pezzo di piazza. Con un fiore, con un vaso, con un pensiero.",
+    "intro_body_2": "Pochi mesi dopo, l'intero borgo ha risposto. Le famiglie storiche, i nuovi residenti, gli anziani della piazza, i ragazzi che curano un giardinetto pubblico. Ogni puntino di questa mappa è una storia di cura.",
+    "stat_spots_label": "Angoli fioriti",
+    "stat_participants_label": "Partecipanti",
+    "stat_year_label": "Dalla primavera",
+    "section_map_eyebrow": "Esplora",
+    "section_map_title": "La mappa del borgo fiorito",
+    "section_map_body": "Ogni puntino è una casa, un balcone, un piccolo spazio pubblico curato da una famiglia o da un gruppo di volontari. Clicca per scoprire le foto, le storie, i nomi di chi ha contribuito.",
+    "section_stories_eyebrow": "I racconti",
+    "section_stories_title": "Le voci di Bugnara",
+    "section_stories_body": "Le storie di chi ha messo le mani nella terra. Come è nata l'idea, perché è cresciuta, dove sta andando."
+  },
+  "common": {
+    "loading": "Caricamento…",
+    "error_generic": "Qualcosa è andato storto.",
+    "read_more": "Continua a leggere",
+    "back_to_map": "Torna alla mappa",
+    "all_stories": "Tutte le storie"
+  }
+}

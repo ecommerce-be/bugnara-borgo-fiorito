@@ -8,9 +8,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 /**
  * Cross-Origin Resource Sharing (CORS) configuration.
  *
- * The browser blocks requests from one origin (e.g. http://localhost:5173,
- * where Vite serves the React app) to another (http://localhost:8080,
- * where Spring runs) unless the server explicitly allows it.
+ * The browser blocks requests from one origin (e.g. http://localhost:5173)
+ * to another (http://localhost:8080) unless the server explicitly allows it.
  *
  * Allowed origins are read from application.yml so we can change them
  * per environment without recompiling.
@@ -27,6 +26,7 @@ public class CorsConfig implements WebMvcConfigurer {
                 .allowedOrigins(allowedOrigins)
                 .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
+                .exposedHeaders("X-Admin-Key")
                 .allowCredentials(true)
                 .maxAge(3600);
     }

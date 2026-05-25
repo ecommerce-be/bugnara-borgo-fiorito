@@ -1,14 +1,13 @@
 # ==========================================
-# Borghetto Fiorito - Backend configuration
+# Bugnara Borgo Fiorito - Backend configuration
 # ==========================================
-# Default profile is 'dev'. Override with SPRING_PROFILES_ACTIVE=prod
 spring:
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:dev}
   application:
     name: borghetto-fiorito-api
   jpa:
-    open-in-view: false   # best practice: avoid lazy-loading in the view layer
+    open-in-view: false
 
 server:
   port: ${SERVER_PORT:8080}
@@ -16,7 +15,6 @@ server:
     include-message: always
     include-binding-errors: always
 
-# Actuator: expose only what we need publicly
 management:
   endpoints:
     web:
@@ -26,10 +24,26 @@ management:
     health:
       show-details: when-authorized
 
-# Custom application properties
+# ============== Custom app properties ==============
 app:
   cors:
     allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:http://localhost:5173}
+
+  # Temporary admin auth (replaced by JWT in Phase 5)
+  admin-api-key: ${APP_ADMIN_API_KEY:}
+
+  # Cloudinary for photo storage and CDN
+  cloudinary:
+    cloud-name:    ${CLOUDINARY_CLOUD_NAME:}
+    api-key:       ${CLOUDINARY_API_KEY:}
+    api-secret:    ${CLOUDINARY_API_SECRET:}
+    upload-preset: ${CLOUDINARY_UPLOAD_PRESET:bugnara_spots}
+
+  # Resend for transactional emails
+  resend:
+    api-key:     ${RESEND_API_KEY:}
+    from:        ${RESEND_FROM:Bugnara Borgo Fiorito <onboarding@resend.dev>}
+    admin-inbox: ${RESEND_ADMIN_INBOX:}
 
 ---
 # ============== DEV PROFILE ==============
@@ -44,7 +58,7 @@ spring:
     password:
   h2:
     console:
-      enabled: true     # available at http://localhost:8080/h2-console
+      enabled: true
       path: /h2-console
   jpa:
     hibernate:

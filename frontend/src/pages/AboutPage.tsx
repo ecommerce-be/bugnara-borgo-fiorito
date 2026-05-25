@@ -70,13 +70,11 @@ export default function AboutPage() {
 
           <div className="grid md:grid-cols-2 gap-10 max-w-3xl mx-auto">
             <FounderCard
-              initials="?"
               name="Nome Cognome"
               role="Co-fondatore"
               bio="Una breve descrizione di sé, di cosa fa nella vita, e perché ha deciso di iniziare questo progetto per il proprio paese."
             />
             <FounderCard
-              initials="?"
               name="Nome Cognome"
               role="Co-fondatore"
               bio="Una breve descrizione di sé, di cosa fa nella vita, e perché ha deciso di iniziare questo progetto per il proprio paese."
@@ -122,8 +120,7 @@ export default function AboutPage() {
   );
 }
 
-function FounderCard({ initials, name, role, bio }: {
-  initials: string;
+function FounderCard({ name, role, bio }: {
   name: string;
   role: string;
   bio: string;

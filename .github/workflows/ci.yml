@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main, develop ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, develop ]
 
 jobs:
   backend:
@@ -24,8 +24,16 @@ jobs:
           cache: maven
 
       - name: Build and test
-        run: ./mvnw -B verify
-        # If the wrapper is not present yet, replace with: mvn -B verify
+        # Use system mvn (provided by setup-java) — we don't ship the Maven Wrapper
+        run: mvn -B verify
+        env:
+          # Tests use a self-contained H2 DB; no real Cloudinary/Resend needed.
+          # We just need any non-empty admin key so the AdminApiKeyFilter is enabled.
+          APP_ADMIN_API_KEY: test-key-for-ci
+          CLOUDINARY_CLOUD_NAME: test
+          CLOUDINARY_API_KEY: test
+          CLOUDINARY_API_SECRET: test
+          CLOUDINARY_UPLOAD_PRESET: test
 
   frontend:
     name: Frontend (React + Vite)

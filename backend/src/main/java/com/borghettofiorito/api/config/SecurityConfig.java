@@ -28,12 +28,17 @@ import java.util.List;
 /**
  * Central Spring Security configuration.
  *
- * Big-picture choices:
- *  - STATELESS session policy (no JSESSIONID cookie).
- *  - CSRF disabled (we use JWT in headers, not cookies).
- *  - BCrypt for password hashing.
- *  - Public endpoints whitelist; everything under /api/v1/admin/** requires auth.
- *  - Explicit 401 for unauthenticated and 403 for authenticated-but-forbidden.
+ * Defaults:
+ *  - Stateless (no JSESSIONID), JWT in Authorization header
+ *  - CSRF disabled (suitable for header-based JWT API)
+ *  - BCrypt for password hashing
+ *  - Explicit 401 for unauthenticated, 403 for forbidden requests
+ *
+ * Access rules:
+ *  - /api/v1/admin/**            -> authenticated
+ *  - /api/v1/auth/login          -> public (login itself)
+ *  - other /api/v1/**            -> public (read, contact form)
+ *  - all OTHER paths             -> public (static frontend served by Spring)
  */
 @Configuration
 @EnableMethodSecurity
@@ -68,11 +73,6 @@ public class SecurityConfig {
         return source;
     }
 
-    /**
-     * Returns 401 Unauthorized (with a JSON body) when the request has no
-     * authentication or the token is invalid/missing. Without this, Spring
-     * Security falls back to 403 which is semantically wrong for "no auth".
-     */
     @Bean
     public AuthenticationEntryPoint authenticationEntryPoint() {
         return (request, response, authException) -> {
@@ -85,10 +85,6 @@ public class SecurityConfig {
         };
     }
 
-    /**
-     * Returns 403 Forbidden when the user IS authenticated but lacks
-     * the required role/permission.
-     */
     @Bean
     public AccessDeniedHandler accessDeniedHandler() {
         return (request, response, accessDeniedException) -> {
@@ -114,16 +110,29 @@ public class SecurityConfig {
                 .accessDeniedHandler(accessDeniedHandler())
             )
             .authorizeHttpRequests(auth -> auth
+                // Admin API: needs authentication
+                .requestMatchers("/api/v1/admin/**").authenticated()
+
+                // Public API
                 .requestMatchers(HttpMethod.GET, "/api/v1/health").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/stats").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/spots/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/stories/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v1/contact").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
+                .requestMatchers(HttpMethod.GET,  "/api/v1/auth/me").authenticated()
+
+                // Dev / monitoring
                 .requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers("/actuator/health", "/actuator/info").permitAll()
+
+                // CORS preflight
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .anyRequest().authenticated()
+
+                // EVERYTHING ELSE: public (static frontend files + SPA fallback).
+                // This is safe because no controller mapping matches these
+                // paths; only the static resource handler does.
+                .anyRequest().permitAll()
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 

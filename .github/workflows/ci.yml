@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main, develop ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, develop ]
 
 jobs:
   backend:
@@ -24,8 +24,15 @@ jobs:
           cache: maven
 
       - name: Build and test
-        run: ./mvnw -B verify
-        # If the wrapper is not present yet, replace with: mvn -B verify
+        run: mvn -B verify
+        env:
+          # Tests use a self-contained H2 DB; no real Cloudinary/Resend needed.
+          CLOUDINARY_CLOUD_NAME: test
+          CLOUDINARY_API_KEY: test
+          CLOUDINARY_API_SECRET: test
+          CLOUDINARY_UPLOAD_PRESET: test
+          # JWT secret for tests: must be >=32 chars
+          JWT_SECRET: ci-only-jwt-secret-that-is-long-enough-for-hs256-signing
 
   frontend:
     name: Frontend (React + Vite)

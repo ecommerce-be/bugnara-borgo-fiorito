@@ -1,0 +1,49 @@
+# =============================================================
+# .dockerignore — files NOT to copy into the Docker build context.
+# Smaller context = faster builds, smaller cache layers.
+# =============================================================
+
+# Build outputs
+backend/target/
+frontend/dist/
+frontend/node_modules/
+
+# IDE / OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+
+# Local env (NEVER ship secrets in an image)
+.env
+.env.local
+*.env.local
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Docs and CI (not needed at runtime)
+README.md
+.github/
+
+# Helper scripts (Windows-only, useless in Linux container)
+*.ps1
+bugnara-env.ps1
+load-env.ps1
+
+# Local Docker
+docker-compose.yml
+
+# TypeScript build cache
+*.tsbuildinfo
+
+# Logs
+*.log
+npm-debug.log*
+
+# Test artifacts
+backend/target/surefire-reports/
+coverage/

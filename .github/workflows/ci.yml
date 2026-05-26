@@ -24,16 +24,15 @@ jobs:
           cache: maven
 
       - name: Build and test
-        # Use system mvn (provided by setup-java) — we don't ship the Maven Wrapper
         run: mvn -B verify
         env:
           # Tests use a self-contained H2 DB; no real Cloudinary/Resend needed.
-          # We just need any non-empty admin key so the AdminApiKeyFilter is enabled.
-          APP_ADMIN_API_KEY: test-key-for-ci
           CLOUDINARY_CLOUD_NAME: test
           CLOUDINARY_API_KEY: test
           CLOUDINARY_API_SECRET: test
           CLOUDINARY_UPLOAD_PRESET: test
+          # JWT secret for tests: must be >=32 chars
+          JWT_SECRET: ci-only-jwt-secret-that-is-long-enough-for-hs256-signing
 
   frontend:
     name: Frontend (React + Vite)

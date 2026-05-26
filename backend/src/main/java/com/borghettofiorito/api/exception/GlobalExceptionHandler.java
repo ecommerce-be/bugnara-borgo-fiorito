@@ -2,6 +2,10 @@ package com.borghettofiorito.api.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -11,17 +15,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Centralized error handling: transforms exceptions into clean JSON
- * payloads so the frontend always gets a predictable shape.
+ * Centralized exception -> JSON error envelope.
  *
- * Response envelope:
- *   {
- *     "timestamp": "...",
- *     "status": 404,
- *     "error": "Not Found",
- *     "message": "...",
- *     "fieldErrors": { "email": "must be a valid email" }   // for 400 only
- *   }
+ *   { "timestamp": "...", "status": 401, "error": "Unauthorized",
+ *     "message": "Invalid credentials" }
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -40,6 +37,27 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.BAD_REQUEST, "Validation failed", fieldErrors);
     }
 
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<Map<String, Object>> handleBadCredentials(BadCredentialsException ex) {
+        // Same message for missing user and wrong password — don't leak which.
+        return build(HttpStatus.UNAUTHORIZED, "Invalid username or password", null);
+    }
+
+    @ExceptionHandler(DisabledException.class)
+    public ResponseEntity<Map<String, Object>> handleDisabled(DisabledException ex) {
+        return build(HttpStatus.FORBIDDEN, "Account is disabled", null);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<Map<String, Object>> handleAuth(AuthenticationException ex) {
+        return build(HttpStatus.UNAUTHORIZED, "Authentication required", null);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Map<String, Object>> handleAccessDenied(AccessDeniedException ex) {
+        return build(HttpStatus.FORBIDDEN, "Access denied", null);
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, Object>> handleIllegalArgument(IllegalArgumentException ex) {
         return build(HttpStatus.BAD_REQUEST, ex.getMessage(), null);
@@ -47,9 +65,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGeneric(Exception ex) {
-        // In production we don't want to leak internal details.
-        return build(HttpStatus.INTERNAL_SERVER_ERROR,
-                "Internal server error", null);
+        return build(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error", null);
     }
 
     private ResponseEntity<Map<String, Object>> build(HttpStatus status,

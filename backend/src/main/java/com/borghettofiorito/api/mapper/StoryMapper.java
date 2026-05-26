@@ -1,6 +1,7 @@
 package com.borghettofiorito.api.mapper;
 
 import com.borghettofiorito.api.domain.entity.Story;
+import com.borghettofiorito.api.dto.response.AdminStoryResponse;
 import com.borghettofiorito.api.dto.response.StoryDetailResponse;
 import com.borghettofiorito.api.dto.response.StorySummaryResponse;
 import org.springframework.stereotype.Component;
@@ -30,6 +31,22 @@ public class StoryMapper {
                 story.getCoverImageUrl(),
                 story.getAuthorName(),
                 story.getPublishedAt()
+        );
+    }
+
+    public AdminStoryResponse toAdmin(Story story) {
+        return new AdminStoryResponse(
+                story.getId(),
+                story.getTitle(),
+                story.getSlug(),
+                story.getExcerpt(),
+                story.getContentMarkdown(),
+                story.getCoverImageUrl(),
+                story.getAuthorName(),
+                story.getPublishedAt(),
+                story.getStatus(),
+                story.getCreatedAt(),
+                story.getUpdatedAt()
         );
     }
 }

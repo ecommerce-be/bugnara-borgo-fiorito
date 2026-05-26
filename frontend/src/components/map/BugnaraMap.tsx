@@ -10,26 +10,22 @@ const BUGNARA_CENTER: [number, number] = [42.0247, 13.8622];
 const DEFAULT_ZOOM = 16;
 
 /**
- * Stadia Maps API key.
+ * Tile provider: CARTO Voyager (no API key, free for non-commercial use).
  *
- * Read from the VITE_STADIA_API_KEY env variable at build time.
- * - In dev: put it in your local `.env` file (gitignored).
- * - In prod (Railway): set it in the service "Variables" tab.
+ * Why CARTO Voyager:
+ *  - Clean editorial style that pairs well with our "paper and stone" design
+ *  - No registration / API key / domain whitelist
+ *  - Generous bandwidth, no rate limit issues for our scale
+ *  - Subdomain rotation (a/b/c/d) speeds up parallel tile loading
  *
- * Vite ONLY exposes env vars prefixed with VITE_ to the frontend bundle.
- * If missing, we still try to load the tiles without a key — Stadia's free
- * tier allows a tiny number of unauthenticated requests, useful for local
- * smoke tests but it will fail quickly in production.
+ * If we ever want the original Stamen Watercolor aesthetic back, we can
+ * subscribe to Stadia Maps "Lite" plan and swap these URLs.
  */
-const STADIA_KEY = import.meta.env.VITE_STADIA_API_KEY as string | undefined;
-
-const watercolorUrl = STADIA_KEY
-  ? `https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg?api_key=${STADIA_KEY}`
-  : `https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg`;
-
-const tonerUrl = STADIA_KEY
-  ? `https://tiles.stadiamaps.com/tiles/stamen_toner_lite/{z}/{x}/{y}.png?api_key=${STADIA_KEY}`
-  : `https://tiles.stadiamaps.com/tiles/stamen_toner_lite/{z}/{x}/{y}.png`;
+const TILE_URL =
+  'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+const TILE_ATTRIBUTION =
+  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> ' +
+  '&copy; <a href="https://carto.com/attributions">CARTO</a>';
 
 /**
  * Smooth fly-to helper. When `target` changes, animates the map there.
@@ -45,7 +41,7 @@ function FlyTo({ target }: { target: [number, number] | null }) {
 }
 
 /**
- * Tracks the current zoom level so we can fade in/out the detail layer.
+ * Tracks the current zoom level (kept for future visual effects).
  */
 function ZoomTracker({ onZoom }: { onZoom: (z: number) => void }) {
   const map = useMap();
@@ -68,7 +64,7 @@ interface BugnaraMapProps {
 
 export function BugnaraMap({ markers, selectedId, onMarkerClick, filterType }: BugnaraMapProps) {
   const [flyTarget, setFlyTarget] = useState<[number, number] | null>(null);
-  const [zoom, setZoom] = useState(DEFAULT_ZOOM);
+  const [, setZoom] = useState(DEFAULT_ZOOM);
 
   const visibleMarkers = useMemo(
     () => markers.filter(m => filterType === 'ALL' || m.type === filterType),
@@ -80,18 +76,6 @@ export function BugnaraMap({ markers, selectedId, onMarkerClick, filterType }: B
     const m = markers.find(x => x.id === selectedId);
     if (m) setFlyTarget([Number(m.latitude), Number(m.longitude)]);
   }, [selectedId, markers]);
-
-  /**
-   * Detail-layer opacity strategy:
-   *  - Zoom <= 15  : 0    (pure watercolor, far view)
-   *  - Zoom 16-17  : fade in from 0 to 0.55
-   *  - Zoom >= 18  : 0.75 (streets readable, watercolor still tinting)
-   */
-  const detailOpacity = useMemo(() => {
-    if (zoom <= 15) return 0;
-    if (zoom >= 18) return 0.75;
-    return ((zoom - 15) / 3) * 0.75;
-  }, [zoom]);
 
   return (
     <MapContainer
@@ -105,22 +89,11 @@ export function BugnaraMap({ markers, selectedId, onMarkerClick, filterType }: B
       minZoom={14}
       maxZoom={19}
     >
-      {/* LAYER 1 — Watercolor base (Stamen Watercolor via Stadia Maps). */}
       <TileLayer
-        url={watercolorUrl}
-        attribution='&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://stamen.com/">Stamen Design</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        maxNativeZoom={18}
+        url={TILE_URL}
+        attribution={TILE_ATTRIBUTION}
+        subdomains={['a', 'b', 'c', 'd']}
         maxZoom={19}
-      />
-
-      {/* LAYER 2 — Detail overlay (Stamen Toner Lite, fades in at high zoom). */}
-      <TileLayer
-        url={tonerUrl}
-        attribution=""
-        opacity={detailOpacity}
-        maxNativeZoom={20}
-        maxZoom={20}
-        className="map-detail-overlay"
       />
 
       <AttributionControl position="bottomright" prefix={false} />

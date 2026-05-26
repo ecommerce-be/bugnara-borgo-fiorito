@@ -10,6 +10,28 @@ const BUGNARA_CENTER: [number, number] = [42.0247, 13.8622];
 const DEFAULT_ZOOM = 16;
 
 /**
+ * Stadia Maps API key.
+ *
+ * Read from the VITE_STADIA_API_KEY env variable at build time.
+ * - In dev: put it in your local `.env` file (gitignored).
+ * - In prod (Railway): set it in the service "Variables" tab.
+ *
+ * Vite ONLY exposes env vars prefixed with VITE_ to the frontend bundle.
+ * If missing, we still try to load the tiles without a key — Stadia's free
+ * tier allows a tiny number of unauthenticated requests, useful for local
+ * smoke tests but it will fail quickly in production.
+ */
+const STADIA_KEY = import.meta.env.VITE_STADIA_API_KEY as string | undefined;
+
+const watercolorUrl = STADIA_KEY
+  ? `https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg?api_key=${STADIA_KEY}`
+  : `https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg`;
+
+const tonerUrl = STADIA_KEY
+  ? `https://tiles.stadiamaps.com/tiles/stamen_toner_lite/{z}/{x}/{y}.png?api_key=${STADIA_KEY}`
+  : `https://tiles.stadiamaps.com/tiles/stamen_toner_lite/{z}/{x}/{y}.png`;
+
+/**
  * Smooth fly-to helper. When `target` changes, animates the map there.
  */
 function FlyTo({ target }: { target: [number, number] | null }) {
@@ -68,7 +90,6 @@ export function BugnaraMap({ markers, selectedId, onMarkerClick, filterType }: B
   const detailOpacity = useMemo(() => {
     if (zoom <= 15) return 0;
     if (zoom >= 18) return 0.75;
-    // Linear interpolation between 15 -> 18
     return ((zoom - 15) / 3) * 0.75;
   }, [zoom]);
 
@@ -84,27 +105,17 @@ export function BugnaraMap({ markers, selectedId, onMarkerClick, filterType }: B
       minZoom={14}
       maxZoom={19}
     >
-      {/*
-        LAYER 1 — Watercolor base.
-        Stamen Watercolor: hand-painted look, exists up to zoom 18.
-        We cap maxNativeZoom so Leaflet doesn't try to fetch non-existent tiles
-        at zoom 19; it just upscales the zoom-18 tile instead (slight blur, no blanks).
-      */}
+      {/* LAYER 1 — Watercolor base (Stamen Watercolor via Stadia Maps). */}
       <TileLayer
-        url="https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg"
+        url={watercolorUrl}
         attribution='&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://stamen.com/">Stamen Design</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         maxNativeZoom={18}
         maxZoom={19}
       />
 
-      {/*
-        LAYER 2 — Detail overlay (streets + buildings + labels).
-        Stamen "Toner Lite" gives us clean black & white linework that
-        blends beautifully on top of the watercolor. We fade it in only
-        when zoomed close, so the far view stays artistic.
-      */}
+      {/* LAYER 2 — Detail overlay (Stamen Toner Lite, fades in at high zoom). */}
       <TileLayer
-        url="https://tiles.stadiamaps.com/tiles/stamen_toner_lite/{z}/{x}/{y}.png"
+        url={tonerUrl}
         attribution=""
         opacity={detailOpacity}
         maxNativeZoom={20}

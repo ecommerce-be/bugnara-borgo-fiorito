@@ -16,4 +16,6 @@ public interface StoryRepository extends JpaRepository<Story, Long> {
     Optional<Story> findBySlugAndStatus(String slug, PublicationStatus status);
 
     boolean existsBySlug(String slug);
+
+    long countByStatus(PublicationStatus status);
 }

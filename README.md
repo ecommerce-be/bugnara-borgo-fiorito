@@ -1,169 +1,91 @@
 # 🌸 Bugnara Borgo Fiorito
 
-> La mappa partecipativa del borgo che sboccia.
-
-Sito web ufficiale dell'iniziativa **Bugnara Borgo Fiorito**: una mappa interattiva che racconta come la comunità del piccolo borgo di Bugnara (AQ, Valle Peligna) stia riqualificando le proprie case e gli spazi pubblici, casa per casa, vicolo per vicolo.
-
-Progetto nato da un'idea di due ragazzi del paese, che ha coinvolto l'intera popolazione.
+Mappa partecipativa del borgo di Bugnara (AQ, Valle Peligna), dove ogni puntino rappresenta una casa o uno spazio pubblico abbellito dalla comunità.
 
 ---
 
-## 🧱 Stack tecnico
-
-**Backend**
-- Java 21 LTS + Spring Boot 3.3
-- Spring Web, Validation, Data JPA, Actuator
-- Flyway per le migrazioni del database
-- H2 in dev (in-memory), PostgreSQL 16 in prod
-
-**Frontend**
-- React 18 + TypeScript + Vite
-- TanStack Query per le chiamate API
-- React Router v6
-- Tailwind CSS con design system editoriale
-- Framer Motion per le animazioni
-- react-i18next (italiano + inglese)
-- Leaflet + Stadia Maps (mappa acquerello)
-- ReactMarkdown per le storie
-
-**Infrastruttura**
-- Docker Compose per Postgres locale
-- GitHub Actions per CI
-
----
-
-## 📁 Struttura del repository
+## Architettura
 
 ```
-borghetto-fiorito/
-├── backend/                 # Spring Boot API
-│   ├── src/main/java/       # Codice Java
-│   ├── src/main/resources/  # application.yml, migrazioni Flyway
-│   ├── src/test/            # Test integrazione
-│   └── pom.xml
-├── frontend/                # React app
-│   ├── src/
-│   │   ├── components/      # UI riutilizzabile (layout, map, forms, decorative)
-│   │   ├── pages/           # Le pagine del sito
-│   │   ├── hooks/           # React Query hooks
-│   │   ├── i18n/            # Traduzioni IT/EN
-│   │   ├── lib/             # API client
-│   │   └── types/           # TypeScript types
-│   ├── public/
-│   ├── index.html
-│   ├── package.json
-│   └── vite.config.ts
-├── .github/workflows/       # CI
-├── docker-compose.yml       # Postgres locale
-├── .gitignore
-├── .env.example             # Template variabili d'ambiente
-└── README.md
+bugnara-borgo-fiorito/
+├── backend/        # Spring Boot 3.3 + Java 21 + PostgreSQL/H2 + Flyway
+├── frontend/       # React 18 + TypeScript + Vite + Tailwind + Leaflet
+├── Dockerfile      # Multi-stage build per deploy in produzione
+├── railway.json    # Configurazione Railway
+└── docker-compose.yml  # Solo PostgreSQL per sviluppo locale
 ```
 
----
-
-## 🚀 Quick start
+## Sviluppo locale
 
 ### Prerequisiti
-- Java 21 LTS
-- Node.js 20+
+- Java 21 (Temurin / Adoptium consigliato)
 - Maven 3.9+
-- Docker (opzionale, solo per Postgres locale)
+- Node.js 20+
+- (opzionale) Docker per PostgreSQL locale
 
-### 1. Backend
+### Setup
+1. Copia `.env.example` in `.env` e compila le variabili
+2. Avvia il backend:
+   ```powershell
+   .\bugnara-env.ps1
+   .\load-env.ps1
+   cd backend
+   mvn spring-boot:run
+   ```
+3. In un altro terminale, avvia il frontend:
+   ```powershell
+   cd frontend
+   npm install
+   npm run dev
+   ```
+4. Apri http://localhost:5173
 
-```bash
-cd backend
-mvn spring-boot:run
+### Variabili d'ambiente principali
+Vedi `.env.example` per la lista completa. Le più importanti:
+- `JWT_SECRET`: stringa di almeno 32 caratteri per firmare i JWT
+- `CLOUDINARY_*`: credenziali per upload foto
+- `RESEND_*`: credenziali per email transazionali
+
+## Deploy in produzione (Railway)
+
+### Architettura prod
+Un singolo container Docker che contiene:
+- Backend Spring Boot in esecuzione sulla porta `$PORT`
+- Frontend React compilato in `classpath:/static/`, servito direttamente da Spring
+
+Stesso origine → niente CORS in produzione.
+
+### Step deploy
+
+1. Crea un account su https://railway.app (login con GitHub)
+2. **New Project** → **Deploy from GitHub repo** → seleziona `bugnara-borgo-fiorito`
+3. **Add Service** → **Database** → **PostgreSQL**
+4. Configura le variabili d'ambiente nel servizio backend (vedi sotto)
+5. Railway deployerà automaticamente a ogni push su `main`
+
+### Variabili d'ambiente richieste in prod
+
+```
+SPRING_PROFILES_ACTIVE=prod
+JWT_SECRET=<64 caratteri random>
+APP_CORS_ALLOWED_ORIGINS=https://<tuo-dominio-railway>.up.railway.app
+CLOUDINARY_CLOUD_NAME=<...>
+CLOUDINARY_API_KEY=<...>
+CLOUDINARY_API_SECRET=<...>
+CLOUDINARY_UPLOAD_PRESET=bugnara_spots
+RESEND_API_KEY=<...>
+RESEND_FROM=Bugnara Borgo Fiorito <onboarding@resend.dev>
+RESEND_ADMIN_INBOX=<email destinatario>
 ```
 
-L'API parte su `http://localhost:8080`.
+Le variabili `PGHOST`, `PGPORT`, `PGUSER`, `PGPASSWORD`, `PGDATABASE` vengono iniettate automaticamente da Railway quando colleghi il servizio PostgreSQL.
 
-In dev usa H2 in memoria, quindi non serve installare niente. Console H2:
-- URL: `http://localhost:8080/h2-console`
-- JDBC URL: `jdbc:h2:mem:borghetto`
-- User: `sa` — Password: (vuota)
+## CI
 
-### 2. Frontend
+GitHub Actions esegue su ogni push:
+- Backend: `mvn verify` (compila + testa)
+- Frontend: `npm ci` + `typecheck` + `build`
 
-In un altro terminale:
+## Licenza
 
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-Apri `http://localhost:5173`.
-
-### 3. PostgreSQL locale (opzionale)
-
-```bash
-docker compose up -d postgres
-```
-
-Avvia il backend in profilo prod:
-```bash
-SPRING_PROFILES_ACTIVE=prod \
-DATABASE_URL=jdbc:postgresql://localhost:5432/borghetto \
-DATABASE_USERNAME=borghetto \
-DATABASE_PASSWORD=borghetto \
-mvn spring-boot:run
-```
-
----
-
-## 🔌 API endpoints (pubblici)
-
-| Metodo | Endpoint | Descrizione |
-|---|---|---|
-| GET | `/api/v1/health` | Health check |
-| GET | `/api/v1/stats` | Statistiche aggregate per la home |
-| GET | `/api/v1/spots` | Lista marker della mappa |
-| GET | `/api/v1/spots/{id}` | Dettaglio di uno spot fiorito |
-| GET | `/api/v1/stories` | Lista delle storie pubblicate |
-| GET | `/api/v1/stories/{slug}` | Dettaglio di una singola storia |
-| POST | `/api/v1/contact` | Invio messaggio dal form contatti |
-
----
-
-## 🛠️ Comandi utili
-
-| Cosa | Comando |
-|---|---|
-| Avviare backend | `cd backend && mvn spring-boot:run` |
-| Test backend | `cd backend && mvn test` |
-| Build backend | `cd backend && mvn clean package` |
-| Avviare frontend | `cd frontend && npm run dev` |
-| Type-check frontend | `cd frontend && npm run typecheck` |
-| Build frontend | `cd frontend && npm run build` |
-| Postgres locale | `docker compose up -d postgres` |
-
----
-
-## 🔐 Sicurezza
-
-- Le credenziali admin di default (`admin` / `changeme123`) sono **solo per lo sviluppo**. Vanno cambiate al primo login in produzione.
-- Tutte le credenziali di produzione passano da variabili d'ambiente, mai hardcoded.
-- Il file `.env` con le credenziali reali è ignorato da Git (`.gitignore`). Usa `.env.example` come template.
-- I dati personali dei partecipanti sono pubblicati solo previo consenso esplicito (campo `consentGiven` + `consentDate`).
-
----
-
-## 🗺️ Roadmap
-
-- [x] **Fase 1** — Setup scaffolding, hello world end-to-end
-- [x] **Fase 2** — Modello dati, API REST pubbliche, Flyway
-- [x] **Fase 3A** — Design system editoriale + home
-- [x] **Fase 3B** — Mappa interattiva, storie, partecipa, chi siamo
-- [ ] **Fase 4** — Upload foto (Cloudinary) + email notifiche
-- [ ] **Fase 5** — Area admin con login JWT
-- [ ] **Fase 6** — Deploy in produzione (Railway/Render) + dominio custom
-
----
-
-## 🤝 Crediti
-
-Sito sviluppato per la comunità di Bugnara (AQ).
-Mappe: [Stadia Maps](https://stadiamaps.com/) + [Stamen Watercolor](https://stamen.com/) + [OpenStreetMap](https://www.openstreetmap.org/).
-Font: Fraunces + Cormorant Garamond + Inter (Google Fonts).
+Progetto comunitario di e per Bugnara. Codice aperto, contenuti dei cittadini.
